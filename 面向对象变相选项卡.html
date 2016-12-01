@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+<style>
+	.divs div {
+		width: 200px;
+		height: 200px;
+		border: 1px solid #000;
+		display: none;
+	}
+	.divs div.show {
+		display: block;
+	}
+	#box input.active {
+		background: red;
+		color: #fff;
+	}
+	#box2 input.active {
+		background: red;
+		color: #fff;
+	}
+</style>
+</head>
+<body>
+<div id="box">
+	<div class="btn">
+		<input type="button" value="选项1" class="active">
+		<input type="button" value="选项2">
+		<input type="button" value="选项3">
+	</div>
+	<div class="divs">
+		<div class="show">1111</div>
+		<div>2222</div>
+		<div>3333</div>
+	</div>
+</div>
+<div id="box2">
+	<div class="btn">
+		<input type="button" value="选项1" class="active">
+		<input type="button" value="选项2">
+		<input type="button" value="选项3">
+	</div>
+	<div class="divs">
+		<div class="show">1111</div>
+		<div>2222</div>
+		<div>3333</div>
+	</div>
+</div>
+	<input type="button" value="btn0" id="btn0">
+	<input type="button" value="btn1" id="btn1">
+	<input type="button" value="btn2" id="btn2">
+	<input type="button" value="btn3" id="btn3">
+	<input type="button" value="btn4" id="btn4">
+<script>
+	function Tab(id){
+		this.box = document.getElementById(id);//传参
+		//this.btn = this.box.getElementsByClassName('btn')[0];
+		this.btns = this.box.getElementsByTagName('input');
+		
+		this.divs = this.box.getElementsByClassName('divs')[0];
+		this.divChild = this.divs.getElementsByTagName('div');
+		//console.log(this.btns)
+		var timer = null;
+		this.num = 0;
+		this.events();
+	}
+	
+	Tab.prototype.events = function(){
+		var _this = this;//把这个Tab下的this存一下
+		for(var i = 0; i < this.btns.length; i++){
+			(function(index){
+				_this.btns[index].onclick = function(){
+					_this.num = index;
+					_this.change(index);//调用下一个函数
+				}
+			})(i)
+		}
+	}
+	
+	Tab.prototype.change = function(index){
+		for(var i = 0; i < this.btns.length; i++){
+			this.btns[i].className = "";
+			this.divChild[i].className = "";
+		}
+		this.btns[index].className = "active";
+		this.divChild[index].className = "show";
+	}
+	
+	Tab.prototype.autoPaly = function(){
+		var _this = this;
+		clearInterval(this.timer);
+		this.timer = setInterval(function(){
+			_this.num++;
+			if(_this.num >= _this.btns.length){
+				_this.num = 0;
+			}
+			_this.change(_this.num);
+		},1000)
+	}
+	
+	Tab.prototype.stop = function(){
+		clearInterval(this.timer);
+		this.timer = null;
+	}
+	
+	Tab.prototype.fanx = function(){
+		return !!this.timer;
+	}
+	var t1 = new Tab('box');//点击切换
+	var t2 = new Tab('box2');
+	t1.autoPaly();
+	t2.autoPaly();
+//		1.自动播放  (OK)
+//		2.第一个播放，第二个不走 ()
+//		3.点击btn1的时候，让第二个走，第一个停
+//		4.点击btn2的时候，2个都停
+//		5.点击btn3的时候，2个都走
+//		6.反向走（走的停，停的走） 
+	var btn0 = document.getElementById('btn0');
+	var btn1 = document.getElementById('btn1');
+	var btn2 = document.getElementById('btn2');
+	var btn3 = document.getElementById('btn3');
+	var btn4 = document.getElementById('btn4');
+	btn0.onclick = function(){
+		t2.stop();
+	}
+	
+	btn1.onclick = function(){
+		t1.stop();
+		t2.autoPaly();
+	}
+	
+	btn2.onclick = function(){
+		t1.stop();
+		t2.stop();
+	}
+	btn3.onclick = function(){
+		t1.autoPaly();
+		t2.autoPaly();
+	}
+	
+	btn4.onclick = function(){
+		if(t1.fanx()){
+			t1.stop();
+		} else {
+			t1.autoPaly();
+		}
+		
+		if(t2.fanx()){
+			t2.stop();
+		} else {
+			t2.autoPaly();
+		}
+	}
+</script>
+</body>
+</html>
